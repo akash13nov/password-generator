@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 const Main = () => {
+  const maxLangth = 100;
   const [password, setPassword] = useState("");
   const [length, setLength] = useState(8);
   const [isNumberAllowed, setIsNumberAllowed] = useState(false);
   const [charAllowed, setCharAllowed] = useState(false);
 
   const [savePassword, setSavePassword] = useState([]);
+  const passwordRef = useRef(null);
 
   const generatePassword = () => {
     let passGenerate = "";
@@ -28,6 +30,13 @@ const Main = () => {
   useEffect(() => {
     generatePassword();
   }, [length, isNumberAllowed, charAllowed]);
+
+  const copyPasswordClipboard = () => {
+    navigator.clipboard.writeText(password);
+    passwordRef.current.select();
+    passwordRef.current.setSelectionRange(0, maxLangth);
+  };
+
   return (
     <div className="select-none flex flex-col gap-5 m-auto w-220">
       <h1 className="text-center text-4xl font-bold pt-20 ">
@@ -38,6 +47,7 @@ const Main = () => {
         placeholder="Enter Password"
         readOnly={true}
         value={password}
+        ref={passwordRef}
         className="outline-none border-none bg-gray-200 px-3 py-2 rounded-lg text-black"
       />
       <label htmlFor="range">
@@ -45,7 +55,7 @@ const Main = () => {
           type="range"
           id="range"
           min={0}
-          max={100}
+          max={maxLangth}
           value={length}
           onChange={(event) => {
             setLength(event.target.value);
@@ -86,12 +96,14 @@ const Main = () => {
         />
         Charcter Allowed
       </label>
-      <button className="px-6 py-2 text-white font-semibold cursor-pointer rounded-xl bg-gradient-to-r from-purple-500 to-indigo-600 shadow-lg hover:scale-105 transition">
+      <button
+        onClick={copyPasswordClipboard}
+        className="px-6 py-2 text-white font-semibold cursor-pointer rounded-xl bg-gradient-to-r from-purple-500 to-indigo-600 shadow-lg hover:scale-105 transition"
+      >
         Copy Password
       </button>
       <button
         onClick={() => {
-          setPassword(" ");
           setLength(8);
           setIsNumberAllowed(false);
           setCharAllowed(false);
@@ -102,17 +114,26 @@ const Main = () => {
       </button>
       <button
         onClick={() => {
-          setSavePassword((prevPass) => {
-            [...prevPass, password];
-          });
+          setSavePassword((prevPass) => [...prevPass, password]);
         }}
         className="px-6 py-2 text-white font-bold cursor-pointer rounded-lg bg-gradient-to-r from-green-400 to-emerald-600 shadow-[0_0_20px_rgba(34,197,94,0.7)] hover:from-emerald-500 hover:to-green-700 hover:scale-105 transition-all duration-300"
       >
         Save Password
       </button>
-      {savePassword.map((item, idx) => {
-        return <p key={idx}>{item}</p>;
-      })}
+      <div>
+        <h1 className="text-center text-2xl font-bold pt-10 ">
+          Save Password List
+        </h1>
+        <ul>
+          {savePassword.map(function (item, idx) {
+            return (
+              <li className="text-md" key={idx}>
+                {idx + 1}. {item}
+              </li>
+            );
+          })}
+        </ul>
+      </div>
     </div>
   );
 };
