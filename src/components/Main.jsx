@@ -124,7 +124,7 @@ const Main = () => {
         <h1 className="text-center text-2xl font-bold pt-10 ">
           Save Password List
         </h1>
-        <ul>
+        <ul className="flex flex-col gap-1.5">
           {savePassword.map(function (item, idx) {
             return (
               <li className="text-md" key={idx}>
